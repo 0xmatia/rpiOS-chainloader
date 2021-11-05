@@ -7,7 +7,16 @@
 #![feature(asm)]
 #![feature(global_asm)]
 
-/// Dummy panic handler
 mod cpu;
 mod bsp;
+/// Dummy panic handler
 mod panic_handler;
+
+/// Early init code.
+///
+/// # Safety
+///
+/// - Only a single core must be active and running this function.
+unsafe fn kernel_init() -> ! {
+    panic!()
+}
