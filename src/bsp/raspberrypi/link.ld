@@ -7,10 +7,11 @@
 kernel_addr_in_memory = 0x80000;
 ENTRY(kernel_addr_in_memory)
 
-MEMORY
+/* Apparenly not needed :) */
+/* MEMORY
 {
     RAM (rwx) : ORIGIN = kernel_addr_in_memory, LENGTH = 1023M
-}
+} */
 
 PHDRS
 {
@@ -38,12 +39,16 @@ SECTIONS
         *(.text._start_arguments) /* constants */
         *(.text._start_rust)  /* rust entry point*/
         *(.text*) /* the rest */
-    } : segment_rx
+    } :segment_rx
 
-    .rodata : ALIGN(8) { *(.rodata*) } : segment_rx
-    .got : ALIGN(8) { *(.got) } : segment_rx
+    .rodata : ALIGN(8)
+    { 
+        *(.rodata*)
+    } :segment_rx
 
-    .data : { *(.data) } : segment_rw
+    .got : ALIGN(8) { *(.got) } :segment_rx
+
+    .data : { *(.data) } :segment_rw
 
     /* bsses */
     .bss : ALIGN(16)
@@ -52,5 +57,5 @@ SECTIONS
         *(.bss*)
         . = ALIGN(16);
         __bss_end_exclusive = .;
-    } : NONE
+    } :NONE
 }

@@ -12,4 +12,4 @@ mod raspberrypi;
 
 #[cfg(feature="bsp_rpi3")]
 #[allow(warnings)]
-use raspberrypi::*;
+pub use raspberrypi::*;

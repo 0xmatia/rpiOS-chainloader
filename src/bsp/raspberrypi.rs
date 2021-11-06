@@ -7,4 +7,5 @@
 
 //! board specific code for Raspberry Pi (currently 3) 
 
-mod cpu;
+pub mod cpu;
+pub mod console;

@@ -6,9 +6,13 @@
 #![no_main]
 #![feature(asm)]
 #![feature(global_asm)]
+#![feature(format_args_nl)]
+#![feature(panic_info_message)]
 
 mod cpu;
 mod bsp;
+mod console;
+mod print;
 /// Dummy panic handler
 mod panic_handler;
 
@@ -18,5 +22,6 @@ mod panic_handler;
 ///
 /// - Only a single core must be active and running this function.
 unsafe fn kernel_init() -> ! {
+    print!("Hey!");
     panic!()
 }

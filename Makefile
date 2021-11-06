@@ -26,7 +26,7 @@ ifeq ($(BSP),rpi3)
     KERNEL_BIN        = kernel8.img
     QEMU_BINARY       = qemu-system-aarch64
     QEMU_MACHINE_TYPE = raspi3
-    QEMU_RELEASE_ARGS = -d in_asm -display none
+    QEMU_RELEASE_ARGS = -serial stdio -display none
     OBJDUMP_BINARY    = aarch64-unknown-linux-gnu-objdump
     NM_BINARY         = aarch64-unknown-linux-gnu-nm
     READELF_BINARY    = aarch64-unknown-linux-gnu-readelf
