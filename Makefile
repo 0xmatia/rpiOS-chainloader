@@ -25,7 +25,7 @@ ifeq ($(BSP),rpi3)
     TARGET            = aarch64-unknown-none-softfloat
     KERNEL_BIN        = kernel8.img
     QEMU_BINARY       = qemu-system-aarch64
-    QEMU_MACHINE_TYPE = raspi3
+    QEMU_MACHINE_TYPE = raspi3b
     QEMU_RELEASE_ARGS = -serial stdio -display none
     OBJDUMP_BINARY    = aarch64-unknown-linux-gnu-objdump
     NM_BINARY         = aarch64-unknown-linux-gnu-nm
@@ -51,12 +51,12 @@ QEMU_MISSING_STRING = "This board is not yet supported for QEMU."
 export LINKER_FILE
 
 KERNEL_ELF = target/$(TARGET)/release/kernel
-
+ 
 ##--------------------------------------------------------------------------------------------------
 ## Command building blocks
 ##--------------------------------------------------------------------------------------------------
 RUSTFLAGS          = -C link-arg=-T$(LINKER_FILE) $(RUSTC_MISC_ARGS)
-RUSTFLAGS_PEDANTIC = $(RUSTFLAGS) -D warnings -D missing_docs
+RUSTFLAGS_PEDANTIC = $(RUSTFLAGS)  -D missing_docs  -D warnings
 
 # for conditional compiling (rpi3, rpi4 etc...)
 FEATURES      = --features bsp_$(BSP) 

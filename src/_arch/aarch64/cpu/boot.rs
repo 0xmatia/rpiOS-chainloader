@@ -10,10 +10,11 @@
 
 use crate::kernel_init;
  
- global_asm!(include_str!("boot.s"));
+core::arch::global_asm!(include_str!("boot.s"));
 
 
 #[no_mangle]
-unsafe fn __start_rust() {
+pub unsafe fn _start_rust() {
     kernel_init()
 }
+

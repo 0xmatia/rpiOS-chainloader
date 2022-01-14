@@ -7,9 +7,11 @@
 //! board specific code
 //! reexport board specific code (only RPi 3 for now)
 
+mod device_driver;
+
+
 #[cfg(feature="bsp_rpi3")]
 mod raspberrypi;
 
 #[cfg(feature="bsp_rpi3")]
-#[allow(warnings)]
 pub use raspberrypi::*;

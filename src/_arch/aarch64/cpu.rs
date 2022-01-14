@@ -16,10 +16,20 @@
 
 use cortex_a::asm;
 
+pub use asm::nop; // export cpu::nop() for waiting
+
 /// Pause execution on the core.
 #[inline(always)]
 pub fn wait_forever() -> ! {
     loop{
         asm::wfe();
+    }
+}
+
+#[cfg(feature = "bsp_rpi3")]
+#[inline(always)]
+pub fn spin_for_cycles(cycles: usize) {
+    for _ in 0..cycles {
+        asm::nop();
     }
 }

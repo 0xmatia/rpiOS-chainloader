@@ -9,6 +9,7 @@
 
 use crate::{bsp, console};
 use core::fmt;
+
 // private, helper function
 pub fn __print(args: fmt::Arguments) {
     // This is just fmt::Write, but more readable (or is it?)

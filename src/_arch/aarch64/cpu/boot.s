@@ -61,7 +61,7 @@ _prepare_rust:
     ADR_REL x0, __boot_core_stack_end_exclusive
     mov sp, x0
     // let's begin!
-    b __start_rust
+    b _start_rust
 
 _park_core:
     wfe // wait for event

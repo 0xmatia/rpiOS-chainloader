@@ -8,8 +8,8 @@
 use core::cell::UnsafeCell;
 
 pub mod interface {
-    /// Any object wrapt with this mutex trait guarantees exclusive access,
-    /// ensures not data races.
+    /// Any object wraps with this mutex trait guarantees exclusive access,
+    /// ensures no data races.
     pub trait Mutex {
         /// The data type wrapped with the mutex
         type Data;
@@ -30,7 +30,7 @@ pub mod interface {
 /// the static object won't be used it multiple threads at the same time, which will cause data races. Because of this, any access
 /// to *static mutable* item is unsafe.
 /// https://doc.rust-lang.org/reference/items/static-items.html
-/// Wrapping it in a lock may help (core:cell:Cell?). In the case of my RpiOS, the lock function doesn't really do anything besided
+/// Wrapping it in a lock may help (core:cell:Cell?). In the case of my RpiOS, the lock function doesn't really do anything beside
 /// calling get on the object in an unsafe block. In the future, where multithreaded will be used, the lock function will probably use
 /// atomic operations or whatever, to ensure exclusive access to the data.
 
