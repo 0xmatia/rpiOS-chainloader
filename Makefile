@@ -31,7 +31,7 @@ ifeq ($(BSP),rpi3)
     NM_BINARY         = aarch64-unknown-linux-gnu-nm
     READELF_BINARY    = aarch64-unknown-linux-gnu-readelf
     LINKER_FILE       = src/bsp/raspberrypi/link.ld
-    RUSTC_MISC_ARGS   = -C target-cpu=cortex-a53
+    RUSTC_MISC_ARGS   = -C target-cpu=cortex-a53 
 else ifeq ($(BSP),rpi4)
     TARGET            = aarch64-unknown-none-softfloat
     KERNEL_BIN        = kernel8.img
@@ -56,7 +56,7 @@ KERNEL_ELF = target/$(TARGET)/release/kernel
 ## Command building blocks
 ##--------------------------------------------------------------------------------------------------
 RUSTFLAGS          = -C link-arg=-T$(LINKER_FILE) $(RUSTC_MISC_ARGS)
-RUSTFLAGS_PEDANTIC = $(RUSTFLAGS)  -D missing_docs  -D warnings
+RUSTFLAGS_PEDANTIC = $(RUSTFLAGS) -D missing_docs  -D warnings
 
 # for conditional compiling (rpi3, rpi4 etc...)
 FEATURES      = --features bsp_$(BSP) 

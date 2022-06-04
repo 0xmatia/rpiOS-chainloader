@@ -9,7 +9,7 @@ use core::fmt;
 use core::fmt::Arguments;
 
 use crate::{
-    bsp::device_driver::common::MMIODerefWrapper, driver, synchronization::{interface::Mutex},
+    bsp::device_driver::common::MMIODerefWrapper, driver, synchronization::interface::Mutex,
     synchronization::NullLock, cpu, console,
 };
 
@@ -228,8 +228,8 @@ impl PL011UartInner {
         self.registers.ICR.write(ICR::ALL::CLEAR);
 
         // set IBRD + FBRD and enable FIFO and 8N1
-        self.registers.IBRD.write(IBRD::IBRD_DIVINT.val(3));
-        self.registers.FBRD.write(FBRD::FBRD_DIVFRAC.val(16));
+        self.registers.IBRD.write(IBRD::IBRD_DIVINT.val(26));
+        self.registers.FBRD.write(FBRD::FBRD_DIVFRAC.val(3));
         self.registers
             .LCR_H.write(LCR_H::WLEN::EightBits + LCR_H::FEN::Enabled);
 
@@ -275,14 +275,9 @@ impl PL011UartInner {
         }
 
         // read char
-        let mut ret = self.registers.DR.get() as u8 as char;
-
-        if ret == '\r' {
-            ret = '\n';
-        }
+        let ret = self.registers.DR.get() as u8 as char;
 
         self.chars_read += 1;
-
         Some(ret)
     }
 }

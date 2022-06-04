@@ -6,7 +6,7 @@
  */
 
 use crate::{
-    bsp::device_driver::common::MMIODerefWrapper, driver, synchronization::{interface::Mutex},
+    bsp::device_driver::common::MMIODerefWrapper, driver, synchronization::interface::Mutex,
     synchronization::NullLock,
 };
 

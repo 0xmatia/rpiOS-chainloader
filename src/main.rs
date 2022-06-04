@@ -2,7 +2,6 @@
 
 //! Enter point of, well, everything
 //! Well, not really, more general metadata, module definitions etc...
-#![feature(const_fn_fn_ptr_basics)]
 #![feature(format_args_nl)]
 #![feature(panic_info_message)]
 #![feature(trait_alias)]
@@ -36,26 +35,52 @@ unsafe fn kernel_init() -> ! {
     kernel_main();
 }
 
+const LOADER_LOGO: &str = r#"
+.____                     .___            
+|    |    _________     __| _/___________ 
+|    |   /  _ \__  \   / __ |/ __ \_  __ \
+|    |__(  <_> ) __ \_/ /_/ \  ___/|  | \/
+|_______ \____(____  /\____ |\___  >__|   
+        \/         \/      \/    \/
+"#;
+
 fn kernel_main() -> ! {
     use bsp::console::console;
     use console::interface::All;
-    use driver::interface::DeviceManager;
 
-    println!("RpiOS is booting...");
-    println!("Communicating through PL011 UART");
+    println!("{}", LOADER_LOGO);
+    println!("Running on: {}", bsp::board_name());
+    println!();
+    println!("Requesting binary!");
+    console().flush();
 
-    println!("[1] Booting on: {}", bsp::board_name());
-    println!("[2] Drivers loaded:");
-    for (i, driver) in bsp::driver::driver_manager().all_device_drivers().iter().enumerate(){
-        println!("{}. {}", i+1, driver.compatible());
+    console().clear_rx();
+
+    // send three times '3' through UART to notify the pusher to send the kernel / binary
+    for _ in 0..3 {
+        console().write_char(3 as char);
     }
 
-    println!("[3] Chars written: {}", bsp::console::console().chars_written());
+    // Read the binary's size.
+    let mut size: u32 = u32::from(console().read_char() as u8);
+    size |= u32::from(console().read_char() as u8) << 8;
+    size |= u32::from(console().read_char() as u8) << 16;
+    size |= u32::from(console().read_char() as u8) << 24;
 
-    println!("[4] Entering echo mode");
-    console().clear_rx();
-    loop {
-        let c = bsp::console::console().read_char();
-        bsp::console::console().write_char(c);
-    } 
+    console().write_char('O');
+    console().write_char('K');
+
+    let kernel_addr = bsp::memory::board_default_load_address() as *mut u8;
+
+    unsafe {
+        for i in 0..size {
+            core::ptr::write_volatile(kernel_addr.offset(i as isize), console().read_char() as u8);
+        }
+    }
+
+    println!("Received kernel, executing now!");
+    console().flush();
+
+    let kernel: fn() -> ! = unsafe { core::mem::transmute(kernel_addr) };
+    kernel();
 }

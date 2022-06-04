@@ -7,7 +7,7 @@ edition = "2021"
 lto = true
 
 [features]
-default = []
+default = ["bsp_rpi3"]
 bsp_rpi3 = []
 bsp_rpi4 = []
 

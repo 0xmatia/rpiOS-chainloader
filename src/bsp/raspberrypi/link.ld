@@ -28,7 +28,7 @@ PHDRS
 
 SECTIONS
 {
-    . = 0;
+    . = 0x2000000; /* link address. The bootloader with relocate here before loading the kernel */
 
     /*
     This is the "start" of the stack section for the boot core.
@@ -40,10 +40,8 @@ SECTIONS
         __boot_core_stack_end_exclusive = .;
     } :segment_boot_core_stack
 
-    /*
-    Code section. the first instruction is in kernel_addr_in_memory
-    create a section called text where code will live
-    */
+    /* Code section. */
+	__binary_start = .;
     .text :
     {
         KEEP(*(.text._start)) /* found in boot.s */
@@ -52,15 +50,16 @@ SECTIONS
         *(.text*) /* the rest */
     } :segment_code
 
-    .rodata : ALIGN(8)
-    { 
-        *(.rodata*)
-    } :segment_code
+    .rodata : ALIGN(8) { *(.rodata*) } :segment_code
 
     .got : ALIGN(8) { *(.got) } :segment_code
 
     .data : { *(.data*) } :segment_data
 
+	. = ALIGN(8);
+
+	__binary_end_exclusive = .;
+	
     /* bsses */
     .bss (NOLOAD) : ALIGN(16)
     {

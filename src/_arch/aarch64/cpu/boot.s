@@ -28,6 +28,17 @@ https://sourceware.org/binutils/docs-2.36/as/AArch64_002dRelocations.html
 	add	\register, \register, #:lo12:\symbol
 .endm
 
+// Load the address of a symbol into a register, absolute.
+//
+// # Resources
+//
+// - https://sourceware.org/binutils/docs-2.36/as/AArch64_002dRelocations.html
+.macro ADR_ABS register, symbol
+	movz	\register, #:abs_g2:\symbol
+	movk	\register, #:abs_g1_nc:\symbol
+	movk	\register, #:abs_g0_nc:\symbol
+.endm
+
 .equ _core_id_mask, 0b11
 
 .section .text._start
@@ -45,23 +56,32 @@ _start:
     b.ne _park_core
 
     // the core executing these lines is the boot core
-    ADR_REL x0, __bss_start
-    ADR_REL x1, __bss_end_exclusive
+    ADR_ABS x0, __bss_start
+	ADR_ABS x1, __bss_end_exclusive
 
 _initialize_bss:
     cmp x0, x1
-    b.eq _prepare_rust // break the loop if we reached ens of bss
+    b.eq _relocate_bootloader // break the loop if we reached end of bss
     stp xzr, xzr, [x0], #16 // store two zero values (xzr=0) in the bss section
     b _initialize_bss
 
-_prepare_rust:
-    // setting up stack:
-    // sp start from pointing at the end of the bss section,
-    // and it grows downwards (0x7999 - 0x0000)
-    ADR_REL x0, __boot_core_stack_end_exclusive
-    mov sp, x0
-    // let's begin!
-    b _start_rust
+_relocate_bootloader:
+	ADR_REL x0, __binary_start // Where the binary was loaded (ex. 0x8000)
+	ADR_ABS x1, __binary_start // Where the binary was linked (ex. 0x2000000)
+	ADR_ABS x2, __binary_end_exclusive // End of the binary.
+
+_copy_loop:
+	ldr x3, [x0], #8 //  load to x3 whatever is in x0, advance x0 by 8
+	str x3, [x1], #8 //  store whatever is in x3 in the address of x3, advance by 8 x1
+	cmp x1, x2
+	b.lo _copy_loop
+
+// setting up stack:
+ADR_ABS x0, __boot_core_stack_end_exclusive
+mov sp, x0
+// let's begin!
+ADR_ABS x0, _start_rust
+br x0
 
 _park_core:
     wfe // wait for event
